@@ -860,7 +860,8 @@ class QuickTileApp(object):
         self.wm = wm
         self.commands = commands
         self._keys = keys or {}
-        self._modmask = modmask or gtk.gdk.ModifierType(0)
+        self._modmask = modmask or None
+        """ or gtk.gdk.ModifierType(0) """
 
     def run(self):
         """Initialize keybinding and D-Bus if available, then call
@@ -874,10 +875,13 @@ class QuickTileApp(object):
 
         if XLIB_PRESENT:
             self.keybinder = KeyBinder()
+
+            if self._modmask == None or self._modmask == 'None' :
+                self._modmask = ''
+              
             for key, func in self._keys.items():
                 def call(func=func):
                     self.commands.call(func, wm)
-
                 self.keybinder.bind(self._modmask + key, call)
         else:
             logging.error("Could not find python-xlib. Cannot bind keys.")
